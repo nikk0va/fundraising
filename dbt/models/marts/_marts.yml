@@ -1,0 +1,29 @@
+version: 2
+models:
+  - name: dim_campaign
+    columns:
+      - name: campaign_id
+        tests: [unique, not_null]
+  - name: fact_donation
+    columns:
+      - name: donation_id
+        tests: [unique, not_null]
+      - name: campaign_id
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_campaign')
+                field: campaign_id
+      - name: amount_uah
+        tests: [not_null]
+      - name: donor_type
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['named', 'cat', 'male', 'female', 'alias']
+      - name: time_precision
+        tests:
+          - accepted_values:
+              arguments:
+                values: ['exact', 'period']
