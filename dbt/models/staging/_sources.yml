@@ -6,3 +6,4 @@ sources:
       - name: donations_new
       - name: donations_old
       - name: campaigns
+      - name: donations_api

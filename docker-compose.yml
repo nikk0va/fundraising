@@ -6,5 +6,29 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
       - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+  
+  airflow:
+    build: ./airflow
+    env_file: .env
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      DBT_PROFILES_DIR: /opt/project/dbt/profiles
+      DBT_TARGET_PATH: /tmp/dbt_target
+      DBT_LOG_PATH: /tmp/dbt_logs
+      AIRFLOW__CORE__LOAD_EXAMPLES: "false"
+      AIRFLOW__CORE__SIMPLE_AUTH_MANAGER_ALL_ADMINS: "true"
+    ports: ["8081:8080"]
+    volumes:
+      - ./airflow/dags:/opt/airflow/dags
+      - .:/opt/project
+    command: standalone
+    depends_on: [postgres, mock-api]
+  mock-api:
+    build: ./mock_api
+    ports: ["18000:8000"]
+    volumes:
+      - ./data/mock_api:/state
+
 volumes:
   pgdata:
