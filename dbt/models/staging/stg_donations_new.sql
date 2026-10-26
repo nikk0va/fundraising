@@ -1,10 +1,12 @@
 with src as (
     select *,
-        lower(trim(regexp_replace(counterparty, '^Від:\s*', ''))) as donor_name
+        lower(trim(regexp_replace(counterparty, '^Від:\s*', ''))) as donor_name,
+        concat_ws('|', campaign_id, operation_ts, amount, counterparty, balance) as natural_key
     from {{ source('raw', 'donations_new') }}
     where counterparty is not null
 )
 select
+    md5(s.natural_key || '|' || row_number() over (partition by s.natural_key order by s.loaded_at)) as donation_id,
     s.campaign_id::int                                       as campaign_id,
     (to_timestamp(s.operation_ts, 'DD.MM.YYYY HH24:MI')::timestamp)
         at time zone 'Europe/Kyiv'                           as donated_at,
