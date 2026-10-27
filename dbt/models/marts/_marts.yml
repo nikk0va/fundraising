@@ -26,4 +26,4 @@ models:
         tests:
           - accepted_values:
               arguments:
-                values: ['exact', 'period']
+                values: ['exact', 'day', 'period']
