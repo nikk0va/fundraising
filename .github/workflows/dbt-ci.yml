@@ -1,0 +1,37 @@
+name: dbt-ci
+on: [push, pull_request]
+
+jobs:
+  dbt-build:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: fund
+          POSTGRES_PASSWORD: ci_pass
+          POSTGRES_DB: fundraising
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U fund"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      POSTGRES_HOST: localhost
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: fund
+      POSTGRES_PASSWORD: ci_pass
+      POSTGRES_DB: fundraising
+      DONOR_SALT: ci_salt
+      DBT_PROFILES_DIR: dbt/profiles
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install dbt-postgres
+      - name: Load fixture data
+        run: PGPASSWORD=ci_pass psql -h localhost -U fund -d fundraising -f ci/raw_fixture.sql
+      - name: dbt build (full)
+        run: dbt build --project-dir dbt
+      - name: dbt build (incremental run)
+        run: dbt build --project-dir dbt
