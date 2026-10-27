@@ -13,7 +13,7 @@ select
     round(replace(s.amount, ',', '.')::numeric, 2)           as amount_uah,
     s.currency,
     case when a.alias is null then encode(sha256(convert_to(
-        '{{ env_var("DONOR_SALT", "dev_salt") }}' || s.donor_name,
+        '{{ env_var("DONOR_SALT") }}' || s.donor_name,
         'UTF8')), 'hex') end                                 as donor_key,
     coalesce(a.donor_type, 'named')                          as donor_type,
     'exact'                                                  as time_precision
