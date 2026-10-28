@@ -5,6 +5,7 @@ with src as (
 )
 select
     md5(o.natural_key || '|' || row_number() over (partition by o.natural_key order by o.loaded_at)) as donation_id,
+    o.source_row_no::int                                     as source_seq,
     o.campaign_id::int                                       as campaign_id,
     null::timestamptz                                        as donated_at,
     round(replace(o.amount_uah, ',', '.')::numeric, 2)       as amount_uah,

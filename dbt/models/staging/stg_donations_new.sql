@@ -8,6 +8,7 @@ with src as (
 )
 select
     md5(s.natural_key || '|' || row_number() over (partition by s.natural_key order by s.loaded_at)) as donation_id,
+    s.source_row_no::int                                     as source_seq,
     s.campaign_id::int                                       as campaign_id,
     case when s.has_time
         then (to_timestamp(s.operation_ts, 'DD.MM.YYYY HH24:MI')::timestamp) at time zone 'Europe/Kyiv'

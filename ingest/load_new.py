@@ -21,6 +21,7 @@ for c in ["amount", "balance"]:
         df[c] = (df[c].str.replace("\u00a0", "", regex=False)
                       .str.replace(" ", "", regex=False)
                       .str.replace(",", ".", regex=False))
+df.insert(0, "source_row_no", range(1, len(df) + 1))
 df["campaign_id"] = campaign_id
 df["source_file"] = path
 df["loaded_at"] = pd.Timestamp.now(tz="UTC")

@@ -17,6 +17,7 @@ df.columns = [c.strip() for c in df.columns]
 df = df[[c for c in df.columns if c in COLS]].rename(columns=COLS)
 for c in ["amount", "amount_uah"]:
     df[c] = df[c].str.replace(" ", "", regex=False).str.replace(",", ".", regex=False)
+df.insert(0, "source_row_no", range(1, len(df) + 1))
 df["campaign_id"] = campaign_id
 df["source_file"] = path
 df["loaded_at"] = pd.Timestamp.now(tz="UTC")

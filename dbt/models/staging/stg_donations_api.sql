@@ -5,6 +5,7 @@ with src as (
 )
 select
     md5('api|' || s.id)                                      as donation_id,
+    row_number() over (partition by s.campaign_id order by s.tx_time, s.id) as source_seq,
     s.campaign_id                                            as campaign_id,
     to_timestamp(s.tx_time)                                  as donated_at,
     round(s.amount / 100.0, 2)                               as amount_uah,
